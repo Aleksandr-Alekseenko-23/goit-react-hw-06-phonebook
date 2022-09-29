@@ -2,13 +2,24 @@ import React from 'react';
 import { List, Wrapper, Item, Span, Button, Img } from './Contacs.styled.js';
 import Avatar from 'react-avatar';
 import Delete from './../../Assets/img/Delete.svg';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteUsers } from '../../redux/userSlice';
+import { getUsers, getUsersFilter } from '../../redux/selectors';
 
-function Contacs({ contacts, onDelete }) {
+function Contacs() {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getUsers);
+  const filterContacts = useSelector(getUsersFilter);
+  const filterContactsFunction = () => {
+    return contacts.filter(({ name }) =>
+      name.toLowerCase().includes(filterContacts.toLowerCase())
+    );
+  };
+
   return (
     <Wrapper>
       <List>
-        {contacts.map(({ name, number, id }) => {
+        {filterContactsFunction().map(({ name, number, id }) => {
           return (
             <Item key={id}>
               <Avatar size="25" name={name} round={true} />
@@ -16,7 +27,7 @@ function Contacs({ contacts, onDelete }) {
               <Button
                 type="button"
                 onClick={() => {
-                  onDelete(id);
+                  dispatch(deleteUsers(id));
                 }}
               >
                 <Img src={Delete} alt="Delete" />
@@ -30,14 +41,3 @@ function Contacs({ contacts, onDelete }) {
 }
 
 export default Contacs;
-
-Contacs.propTypes = {
-  onDelete: PropTypes.func.isRequired,
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-};

@@ -1,8 +1,14 @@
 import React from 'react';
 import { InputPhoneBook, LabelPhoneBook } from './FilterContact.styled.js';
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { getUsersFilter } from '../../redux/selectors';
+import { filterUsers } from 'redux/filtersSlice.js';
 
-function FilterContact({ onChangeFilter, filter }) {
+function FilterContact() {
+  const dispatch = useDispatch();
+  const filterValue = useSelector(getUsersFilter);
+  const handleFilterChange = ({ target: { value } }) =>
+    dispatch(filterUsers(value));
   return (
     <div>
       <LabelPhoneBook>
@@ -13,8 +19,8 @@ function FilterContact({ onChangeFilter, filter }) {
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
-          value={filter}
-          onChange={onChangeFilter}
+          value={filterValue || ''}
+          onChange={handleFilterChange}
           placeholder="Name"
         />
       </LabelPhoneBook>
@@ -23,8 +29,3 @@ function FilterContact({ onChangeFilter, filter }) {
 }
 
 export default FilterContact;
-
-FilterContact.propTypes = {
-  onChangeFilter: PropTypes.func.isRequired,
-  filter: PropTypes.string.isRequired,
-};
